@@ -153,4 +153,42 @@ class TagTests {
         }
     }
 
+    @Test
+    fun testRenderEachPlaceholder() = runTest {
+        initDocument()
+
+        val store = storeOf(emptyList<Int>())
+        val add = store.handle<Int> { l, n -> l + n }
+
+        val testId = uniqueId()
+        val firstId = uniqueId()
+
+        render {
+            div(id = testId) {
+                div(id = firstId) {}
+                store.renderEach {
+                    ul(id = it.toString()) {}
+                }
+            }
+        }
+
+        val test = document.getElementById(testId) as HTMLDivElement
+        assertEquals("#comment", test.lastChild?.nodeName, "placeholder is not rendered")
+
+        for(i in 0..2) {
+            add(i)
+            delay(200)
+            println(test.childElementCount.toString() + "\n")
+            assertEquals("DIV", test.firstElementChild?.tagName, "[$i] first element is not correct")
+        }
+
+//        delay(200)
+//
+//        for(i in 0..2) {
+//            delay(200)
+//            store.update(store.current + i)
+//        }
+
+    }
+
 }
